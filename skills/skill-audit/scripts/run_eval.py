@@ -58,11 +58,32 @@ def build_workspace(case: dict) -> Path:
     return workspace
 
 
+def resolve_opencode() -> str:
+    """Find a directly-spawnable opencode binary.
+
+    shutil.which() on Windows happily returns the extension-less npm shim, which
+    CreateProcess cannot execute ("%1 is not a valid Win32 application"). Prefer
+    a real executable and fall back to the shim only on POSIX.
+    """
+    override = os.environ.get("OPENCODE_BIN")
+    if override and Path(override).exists():
+        return override
+    if os.name == "nt":
+        for cand in (Path.home() / ".bun" / "bin" / "opencode.exe",):
+            if cand.exists():
+                return str(cand)
+        found = shutil.which("opencode.exe") or shutil.which("opencode.cmd")
+        if found:
+            return found
+    found = shutil.which("opencode")
+    if not found:
+        sys.exit("opencode not found; set OPENCODE_BIN to the executable")
+    return found
+
+
 def run_once(prompt: str, workspace: Path, model: str | None, agent: str,
              deny: str | None, timeout: int) -> dict:
-    exe = shutil.which("opencode")
-    if not exe:
-        sys.exit("opencode not found on PATH")
+    exe = resolve_opencode()
     cmd = [exe, "run", "--format", "json", "--pure", "--agent", agent,
            "--dir", str(workspace)]
     if model:
@@ -187,7 +208,8 @@ def main() -> None:
     _, cases = load_cases(evals_path)
     arms = [a.strip() for a in args.arms.split(",") if a.strip()]
     total = len(cases) * len(arms) * args.trials
-    print(f"{len(cases)} cases x {len(arms)} arms x {args.trials} trials = {total} runs")
+    print(f"{len(cases)} cases x {len(arms)} arms x {args.trials} trials = {total} runs", flush=True)
+    print(f"  ~30s per run, so expect roughly {round(total * 30 / 60)} min", flush=True)
 
     records = []
     for arm in arms:
@@ -206,8 +228,9 @@ def main() -> None:
                     "arm": arm, "case": case["id"], "trial": trial, **graded,
                 })
                 status = {True: "pass", False: "FAIL", None: "n/a"}[graded["passed"]]
-                print(f"  [{arm}] {case['id']} trial {trial}: {status} "
-                      f"({graded['elapsed_s']}s)")
+                done = len(records)
+                print(f"  [{done}/{total}] [{arm}] {case['id']} trial {trial}: {status} "
+                      f"({graded['elapsed_s']}s)", flush=True)
 
     def rate(arm: str) -> float | None:
         graded = [r["passed"] for r in records if r["arm"] == arm and r["passed"] is not None]
