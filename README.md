@@ -42,12 +42,16 @@ skills exist across 6,300+ public repos. Almost none have evals.
 Three phases, cheapest first. It never deletes anything on its own — it produces
 evidence and a recommendation, and you decide.
 
+Run the examples below from the repository root. They share the local `report/`
+directory. Keep inventory and usage reports private: they can include local
+installation paths and observations from session history.
+
 **Phase 1 — inventory and static audit.** Deterministic and free.
 
 ```bash
-python scripts/inventory.py --out report
-python scripts/audit.py --out report
-python scripts/mine_usage.py --out report      # optional, ~90s
+python skills/skill-audit/scripts/inventory.py --out report
+python skills/skill-audit/scripts/audit.py --out report
+python skills/skill-audit/scripts/mine_usage.py --out report  # optional, ~90s
 ```
 
 14 checks across three severities: description length and missing trigger
@@ -60,7 +64,7 @@ script.
 verdicts: keep, shrink, retarget, split, merge, demote, retire.
 
 ```bash
-python scripts/grill.py --out report
+python skills/skill-audit/scripts/grill.py --out report
 ```
 
 It batches skills into cohorts sharing a single decision — 69 skills became 20
@@ -71,7 +75,7 @@ Demotion is offered before deletion, because it costs nothing.
 **Phase 3 — ablation.** The only way to actually know.
 
 ```bash
-python scripts/run_eval.py --skill <name> --arms with,without --trials 3
+python skills/skill-audit/scripts/run_eval.py --skill <name> --arms with,without --trials 3
 ```
 
 Every case runs in a fresh temporary workspace so no run can read another run's

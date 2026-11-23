@@ -2,6 +2,8 @@
 
 An agent skill that audits, interrogates, and prunes other agent skills.
 
+For a bounded swarm task, read [SWARM_READY.md](SWARM_READY.md) for checkout-relative commands and the offline acceptance boundary.
+
 ## Agent skills
 
 ### Issue tracker
