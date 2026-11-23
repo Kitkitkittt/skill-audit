@@ -21,7 +21,7 @@ If a `swarm-ready` skill is installed, load it. Otherwise execute the documented
 
 ## Repository starting point
 
-Read: [AGENTS.md](AGENTS.md), [README.md](README.md), [DESIGN.md](DESIGN.md), [docs](docs).
+Start with [AGENTS.md](AGENTS.md), the [README's checkout commands](README.md#how-it-works), and the [canonical skill](skills/skill-audit/SKILL.md). Use [DESIGN.md](DESIGN.md) for rationale, not current command paths.
 
 Continue an existing approved issue or a clearly scoped user objective after inspecting the source map below. If none is selected, return the smallest useful improvement and its verifier as the handoff; do not begin a portfolio-wide rewrite.
 
@@ -41,7 +41,9 @@ The base above is an inspection snapshot, not a permanent working branch. Refres
 
 ## Verification starting point
 
-No executable acceptance command was established by this bounded source inspection. Read `AGENTS.md`, `README.md` and record the narrowest existing check before implementation. Do not invent a `test` command or infer that the repository has no tests from this gap. For a documentation-only task, check links, factual source anchors and whitespace; do not build unrelated application code.
+For a checkout documentation change, resolve the local links, check that each documented Python entry point exists under `skills/skill-audit/scripts/`, and run `git diff --check`. The README commands start at the repository root; paths in the canonical skill are relative to the skill directory.
+
+These source checks do not load a harness or qualify the skill. Inventory inspects the installed harness, usage mining reads local journal data, and ablation makes model calls. Leave those operations off for documentation verification. Behavioral work needs a separately scoped harness/fixture and eval budget; keep real reports and journals out of the PR.
 
 ## Required handoff result
 
